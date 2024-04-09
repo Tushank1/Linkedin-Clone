@@ -8,24 +8,39 @@ import CalendarViewDayIcon from "@mui/icons-material/CalendarViewDay";
 import InputOption from "./InputOption";
 import Posts from "./Posts";
 import { db } from "../firebase";
+import firebase from "firebase/compat/app";
+import "firebase/compat/firestore";
 
 function Feed() {
+  const [input, setInput] = useState("");
   const [posts, setposts] = useState([]); // Array of posts to be displayed on the page
 
   useEffect(() => {
     // Function that gets all the data from the database and sets it as a state variable 'posts'
-    db.collection("posts").onSnapshot((snapshot) =>
-      setposts(
-        snapshot.docs.map((doc) => ({
-          id: doc.id,
-          data: doc.data(),
-        }))
-      )
-    );
+    db.collection("posts")
+      .orderBy("timestamp", "desc")
+      .onSnapshot((snapshot) =>
+        setposts(
+          snapshot.docs.map((doc) => ({
+            id: doc.id,
+            data: doc.data(),
+          }))
+        )
+      );
   }, []);
 
   const sendPost = (e) => {
     e.preventDefault(); // Prevent form submission which refreshes the page
+
+    db.collection("posts").add({
+      name: "Tushank Bhardwaj",
+      description: "It is my test",
+      message: input,
+      photoUrl: "",
+      timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+    });
+
+    setInput("");
   };
   return (
     <div className="feed">
@@ -33,7 +48,12 @@ function Feed() {
         <div className="feed_input">
           <CreateIcon />
           <form>
-            <input type="text" placeholder="What's on your mind?" />
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              type="text"
+              placeholder="What's on your mind?"
+            />
             <button onClick={sendPost} type="submit">
               Send
             </button>
@@ -50,14 +70,15 @@ function Feed() {
           />
         </div>
       </div>
-      {posts.map((post) => (
-        <Posts />
+      {posts.map(({ id, data: { name, description, message, photoUrl } }) => (
+        <Posts
+          key={id}
+          name={name}
+          description={description}
+          message={message}
+          photoUrl={photoUrl}
+        />
       ))}
-      <Posts
-        name="Tushank Bhardwaj"
-        description="Here is me test"
-        message="Learning"
-      />
     </div>
   );
 }
