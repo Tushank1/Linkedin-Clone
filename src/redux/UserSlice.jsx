@@ -20,4 +20,4 @@ export const { login, logOut } = userSlice.actions;
 // The function below is called a selector. It selects the value of the `value` key from the `rootReducer` state.
 export const selectUser = (state) => state.user.user;
 
-export default userSlice.reducer;
+export default userSlice;
