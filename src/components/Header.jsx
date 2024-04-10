@@ -8,8 +8,18 @@ import SupervisorAccount from "@mui/icons-material/SupervisorAccount";
 import BusinessCenter from "@mui/icons-material/BusinessCenter";
 import Chat from "@mui/icons-material/Chat";
 import Notifications from "@mui/icons-material/Notifications";
+import { useDispatch } from "react-redux";
+import { logOut } from "../redux/UserSlice";
+import { auth } from "../firebase";
 
 function Header() {
+  const dispatch = useDispatch();
+
+  const logoutOfApp = () => {
+    dispatch(logOut());
+    auth.signOut();
+  };
+
   return (
     <div className="header">
       <div className="header_left">
@@ -29,10 +39,7 @@ function Header() {
         <HeaderOption Icon={BusinessCenter} title="Jobs" />
         <HeaderOption Icon={Chat} title="Messaging" />
         <HeaderOption Icon={Notifications} title="Notifications" />
-        <HeaderOption
-          avatar="https://img.freepik.com/premium-photo/man-with-blue-shirt-his-head_745528-2849.jpg?size=338&ext=jpg&ga=GA1.1.1224184972.1711929600&semt=ais"
-          title="me"
-        />
+        <HeaderOption avatar={true} title="me" onClick={logoutOfApp} />
       </div>
     </div>
   );
